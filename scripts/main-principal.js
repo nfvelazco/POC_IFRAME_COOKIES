@@ -7,6 +7,8 @@ var json_valor_por_defecto = {flag_novedad: false,id_producto: -1};
 var valorCookie = JSON.stringify(json_valor_por_defecto);
 Cookies.set(NAME_COOKIE, valorCookie); // Crea una cookie de sesión
 
+
+// TODO: ver si tiene sentido persistir el ultimo valor recuperado
 const setCookieFinishRender = ()=>{
     console.log(`Reestableciendo el valor por defecto de la coockie de session`)
     Cookies.set(NAME_COOKIE, valorCookie);
