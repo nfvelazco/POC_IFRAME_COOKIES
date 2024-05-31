@@ -1,0 +1,36 @@
+<html>
+  <body>
+    <input id="myinput" value="" />
+    <script>
+
+      /**
+       * Handle messages sent from the Python code in the Streamlit app
+       * @param {Object} event - the event object containing the message
+       */
+      function onDataFromPython(event) {
+        // Only process messages of type "streamlit:render"
+        if (event.data.type !== "streamlit:render") return;
+
+        // process the message witout actually rendering any component
+        const eventData = {
+          type: "streamlit:productUpdated",
+          id_producto: event.data.args.product_id,
+          flag_novedad: true 
+        }
+
+        // In this case we need to send the message to the parent of the parent window to reach the Streamlit app parent
+        window.parent.parent.postMessage(eventData, "*");
+      }
+
+      window.addEventListener("message", onDataFromPython);
+      initArgs = {
+          isStreamlitMessage: true,
+          type: "streamlit:componentReady",
+          apiVersion: 1
+      };
+      // tells the parent (Streamlit app) that the component is ready
+      window.parent.postMessage(initArgs, "*")
+
+    </script>
+  </body>
+</html>

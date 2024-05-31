@@ -1,36 +1,30 @@
 import time
-import streamlit as st
 import requests
+import streamlit as st
+import streamlit.components.v1 as components
 
+LLM_ENDPOINT = "http://127.0.0.1:8000/base"
+custom_component = components.declare_component(
+    "mycomponent",
+    path="./streamlit-app"
+)
 
-url = "http://127.0.0.1:8000/base"
-headers = {"Content-Type": "application/json"}
-session_id = "1"
-
-
-
-def generate_response(id, message):
-
+def generate_response(message):
     data = {
-        "id": session_id,
+        "id": "streamlit-app-1",
         "message": message
     }
+
     try:
-        response = requests.post(url, json=data, headers=headers)
-        if response.status_code == 200:
-            assistant_response = response.json()
-        else:
-            assistant_response = "Hubo un error al obtener respuesta del bot."
-    except Exception as e:
+        response = requests.post(LLM_ENDPOINT, json=data, headers={"Content-Type": "application/json"})
+        response.raise_for_status()
+        assistant_response = response.json()
+    except requests.exceptions.RequestException as e:
         assistant_response = "Hubo un error al obtener respuesta del bot."
+
     return assistant_response
 
 def run_app():
-    name_cookie = "cookiedemo_guille"
-    cookie = {
-        "flag_novedad": True,
-        "id_producto": 5
-    }
     
     # Display chat messages from history on app rerun
     for message in st.session_state.messages:
@@ -50,13 +44,14 @@ def run_app():
             message_placeholder = st.empty()
             full_response = ""
 
-            assistant_response = generate_response(session_id, prompt)
+            assistant_response = generate_response(prompt)
             # Simulate stream of response with milliseconds delay
             for chunk in assistant_response.split():
                 full_response += chunk + " "
                 time.sleep(0.05)
                 message_placeholder.markdown(full_response + "▌")
             message_placeholder.markdown(full_response)
+        custom_component(product_id="5")
         
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": full_response})

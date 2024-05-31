@@ -18,6 +18,16 @@ const render_producto = (valor) =>{
     $("#txtProducto").html(`Producto id: ${valor.id_producto}`)
 }
 
+window.addEventListener('message', function(event) {
+    // Validate the origin of the message
+    if (event.origin == 'http://localhost:8501' && event.data.flag_novedad) {
+        var updatedCookie = JSON.stringify(event.data);
+        Cookies.set(NAME_COOKIE, updatedCookie); // Crea una cookie de sesión
+        return; 
+    }
+});
+
+
 $(document).ready(()=>{
 
     var checkCookie = setInterval(function() {
@@ -33,5 +43,6 @@ $(document).ready(()=>{
             //clearInterval(checkCookie);
         }
     }, 500); // Intervalo de tiempo en milisegundos
+
 
 })

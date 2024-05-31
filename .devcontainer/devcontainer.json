@@ -1,0 +1,38 @@
+{
+	"name": "Python 3",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "runArgs": [
+        "--net=host"
+    ],
+    "customizations": {
+		"vscode": {
+			"settings": { 
+				"terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "bash"
+                        }
+                },
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.languageServer": "Default",
+				"python.autoComplete.extraPaths": [
+					"/usr/lib/python3/dist-packages/",
+					"/usr/local/lib/python3.10/site-packages/"
+				],
+				"python.analysis.extraPaths": [
+					"/usr/lib/python3/dist-packages/",
+					"/usr/local/lib/python3.10/site-packages/"
+				]
+			},
+			
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ritwickdey.liveserver",
+				"ms-python.debugpy"
+			]
+		}
+	}
+}
