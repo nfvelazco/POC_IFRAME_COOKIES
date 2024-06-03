@@ -1,13 +1,19 @@
 import time
+import random
 import requests
 import streamlit as st
 import streamlit.components.v1 as components
+from conversation import conversation, event_mapping
+
 
 LLM_ENDPOINT = "http://127.0.0.1:8000/base"
 custom_component = components.declare_component(
     "mycomponent",
     path="./streamlit-app"
 )
+
+with open("./iframe/styles.css", "r") as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def generate_response(message):
     data = {
@@ -24,7 +30,12 @@ def generate_response(message):
 
     return assistant_response
 
+def get_response(turn):
+    return conversation[turn]
+
 def run_app():
+    
+    global turn
     
     # Display chat messages from history on app rerun
     for message in st.session_state.messages:
@@ -38,20 +49,27 @@ def run_app():
         # Display user message in chat message container
         with st.chat_message("user"):
             st.markdown(prompt)
+            st.session_state.turn += 1
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             full_response = ""
 
-            assistant_response = generate_response(prompt)
+            #assistant_response = generate_response(prompt)
+            assistant_response = get_response(st.session_state.turn)
             # Simulate stream of response with milliseconds delay
             for chunk in assistant_response.split():
                 full_response += chunk + " "
                 time.sleep(0.05)
                 message_placeholder.markdown(full_response + "▌")
             message_placeholder.markdown(full_response)
-        custom_component(product_id="5")
+
+            event = event_mapping.get(int(st.session_state.turn))
+            if event:
+                custom_component(action=event[0], id_product=event[1])
+            st.session_state.turn += 1
+
         
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": full_response})
@@ -59,7 +77,9 @@ def run_app():
 if __name__ == '__main__':
     
     st.title('Copilot de Compra')
-
+    if "turn" not in st.session_state:
+        st.session_state.turn = 0
+    st.session_state.turn = st.session_state.turn % len(conversation)
     # Initialize chat history
     if "messages" not in st.session_state:
         st.session_state.messages = []

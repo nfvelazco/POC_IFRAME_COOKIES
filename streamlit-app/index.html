@@ -14,7 +14,8 @@
         // process the message witout actually rendering any component
         const eventData = {
           type: "streamlit:productUpdated",
-          id_producto: event.data.args.product_id,
+          action: event.data.args.action,
+          id_producto: event.data.args.id_product,
           flag_novedad: true 
         }
 
